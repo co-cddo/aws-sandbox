@@ -1,0 +1,39 @@
+name: Update AutoTags
+
+on:
+  push:
+  workflow_dispatch:
+  
+jobs:
+  deploy:
+    permissions:
+      id-token: write
+      contents: read
+      
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout private tools
+      uses: actions/checkout@v4
+      with:
+        repository: GorillaStack/auto-tag
+
+    - name: List directory
+      run: |
+        ls -lah
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::283416304068:role/GitHubDeployment
+        aws-region: eu-west-2
+        
+    - name: Test access
+      run: |
+        aws sts get-caller-identity
+        
+    - name: Deploy AutoTag
+      run: |
+        ./deploy_autotag.sh -r eu-west-2 \
+          -s3bu autotags-5a24052b-84d6-417d-8524-ea214faf5f01 \
+          create
