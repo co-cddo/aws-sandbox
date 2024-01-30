@@ -36,4 +36,10 @@ jobs:
       run: |
         ./deploy_autotag.sh -r eu-west-2 \
           -s3bu autotags-5a24052b-84d6-417d-8524-ea214faf5f01 \
-          create
+          --release-version latest \
+          create || echo "Stack likely already exists"
+
+        ./deploy_autotag.sh -r eu-west-2 \
+          -s3bu autotags-5a24052b-84d6-417d-8524-ea214faf5f01 \
+          --release-version latest \
+          update-release
