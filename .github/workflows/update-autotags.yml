@@ -1,7 +1,12 @@
 name: Update AutoTags
 
+# Not currently used...
+
 on:
-  push:
+  #push:
+  #  branches: [ "main" ]
+  #  paths:
+  #    - .github/workflows/update-autotags.yml
   workflow_dispatch:
   
 jobs:
@@ -11,6 +16,8 @@ jobs:
       contents: read
       
     runs-on: ubuntu-latest
+    environment:
+      name: sandbox
     
     steps:
     - name: Checkout private tools
@@ -22,11 +29,12 @@ jobs:
       run: |
         ls -lah
 
-    - name: Configure AWS Credentials
+    - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: arn:aws:iam::283416304068:role/GitHubDeployment
-        aws-region: eu-west-2
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        role-session-name: ${{ github.run_id }}-${{ github.event_name }}-${{ github.job }}
+        aws-region: ${{ vars.AWS_REGION }}
         
     - name: Test access
       run: |

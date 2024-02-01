@@ -1,0 +1,71 @@
+name: 'Deploy access lambda'
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - access/**
+      - .github/workflows/deploy-access-lambda.yml
+  workflow_dispatch:
+env:
+  # Setting an environment variable with the value of a configuration variable
+  AWS_REGION: ${{ vars.AWS_REGION }}
+
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    environment:
+      name: sandbox
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+    
+    - name: Build ZIP file
+      run: |
+        ls -lah
+        bash build.sh
+      working-directory: access/
+    
+    - name: configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        role-session-name: ${{ github.run_id }}-${{ github.event_name }}-${{ github.job }}
+        aws-region: ${{ vars.AWS_REGION }}
+    
+    - name: Test AWS access
+      run: |
+        aws sts get-caller-identity
+        ls -lah
+      working-directory: access/
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      run: terraform init
+      working-directory: access/
+
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      run: terraform fmt -check
+      working-directory: access/
+
+    # Generates an execution plan for Terraform
+    - name: Terraform Apply
+      run: |
+        terraform apply -auto-approve \
+          -input=false \
+          -var="oidc_client_id=${{ secrets.OIDC_CLIENT_ID }}" \
+          -var="oidc_client_secret=${{ secrets.OIDC_CLIENT_SECRET }}"
+      working-directory: access/
