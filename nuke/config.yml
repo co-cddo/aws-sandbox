@@ -10,11 +10,9 @@ resource-types:
   - EC2Instance
   - LambdaFunction
   - IAMUser
-  - IAMRole
-  - IAMPolicy
   - S3Bucket
   - S3Object
-  - IAMUserPolicyAttachment
+  - EKSCluster
 
 accounts:
   "283416304068":
@@ -28,8 +26,6 @@ presets:
       - property: tag:Svc
         type: contains
         value: "sandbox-access"
-      - type: "glob"
-        value: "*/service-role/*"
       IAMRole:
       - property: tag:Svc
         type: contains
