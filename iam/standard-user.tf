@@ -1,11 +1,11 @@
 resource "aws_iam_policy" "policy" {
-  name        = "sandbox-user-base"
+  name = "sandbox-user-base"
   policy = jsonencode(
     {
-      Version   = "2012-10-17"
+      Version = "2012-10-17"
       Statement = [
         {
-          Effect   = "Allow"
+          Effect = "Allow"
           Action = [
             "s3:*",
             "athena:*",
