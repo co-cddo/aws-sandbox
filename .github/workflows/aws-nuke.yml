@@ -1,6 +1,8 @@
 name: 'Nuke AWS environment'
 
 on:
+  schedule:
+    - cron: '0 21 * * FRI'
   workflow_dispatch:
 env:
   # Setting an environment variable with the value of a configuration variable

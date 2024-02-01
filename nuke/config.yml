@@ -14,6 +14,7 @@ resource-types:
   - IAMPolicy
   - S3Bucket
   - S3Object
+  - IAMUserPolicyAttachment
 
 accounts:
   "283416304068":
