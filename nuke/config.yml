@@ -1,0 +1,46 @@
+regions:
+- eu-west-2
+- global
+
+account-blocklist:
+- "999999999999"
+
+resource-types:
+  targets:
+  - EC2Instance
+  - LambdaFunction
+  - IAMUser
+  - IAMRole
+  - S3Bucket
+  - S3Object
+
+accounts:
+  "283416304068":
+    presets:
+    - nonsvc
+
+presets:
+  nonsvc:
+    filters:
+      IAMRole:
+      - property: tag:Svc
+        type: contains
+        value: "sandbox-access"
+      - type: "glob"
+        value: "*-admin"
+      - type: "glob"
+        value: "Tenable*"
+      - type: "glob"
+        value: "GDSSecurityAudit"
+      LambdaFunction:
+      - property: tag:Svc
+        type: contains
+        value: "sandbox-access"
+      S3Bucket:
+      - "s3://cddo-sgs-sandbox-tfstate"
+      - "s3://aws-cloudtrail-logs-283416304068-45d7b058"
+      S3Object:
+      - type: "glob"
+        value: "s3://cddo-sgs-sandbox-tfstate/**"
+      - type: "glob"
+        value: "s3://aws-cloudtrail-logs-283416304068-45d7b058/**"

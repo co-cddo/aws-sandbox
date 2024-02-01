@@ -1,0 +1,46 @@
+name: 'Nuke AWS environment'
+
+on:
+  workflow_dispatch:
+env:
+  # Setting an environment variable with the value of a configuration variable
+  AWS_REGION: ${{ vars.AWS_REGION }}
+
+permissions:
+  id-token: write   # This is required for requesting the JWT
+  contents: read    # This is required for actions/checkout
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    environment:
+      name: sandbox
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v3
+    
+    - name: configure aws credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        role-session-name: ${{ github.run_id }}-${{ github.event_name }}-${{ github.job }}
+        aws-region: ${{ vars.AWS_REGION }}
+    
+    - name: Test AWS access
+      run: |
+        aws sts get-caller-identity
+        ls -lah
+      working-directory: nuke/
+
+    - name: Nuke environment
+      run: |
+        wget -c https://github.com/rebuy-de/aws-nuke/releases/download/v2.25.0/aws-nuke-v2.25.0-linux-amd64.tar.gz -O - | tar -xz -C .
+        ./aws-nuke-v2.25.0-linux-amd64 -q \
+          -c config.yml \
+          --force --force-sleep 3 \
+          --no-dry-run
+      working-directory: nuke/

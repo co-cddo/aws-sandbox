@@ -1,6 +1,8 @@
 **/.target*
 *.zip
 
+nuke/aws-nuke*
+
 # Local .terraform directories
 **/.terraform/*
 **/.terraform*
