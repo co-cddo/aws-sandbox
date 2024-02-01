@@ -11,6 +11,7 @@ resource-types:
   - LambdaFunction
   - IAMUser
   - IAMRole
+  - IAMPolicy
   - S3Bucket
   - S3Object
 
@@ -22,6 +23,12 @@ accounts:
 presets:
   nonsvc:
     filters:
+      IAMPolicy:
+      - property: tag:Svc
+        type: contains
+        value: "sandbox-access"
+      - type: "glob"
+        value: "*/service-role/*"
       IAMRole:
       - property: tag:Svc
         type: contains
