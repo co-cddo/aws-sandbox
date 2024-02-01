@@ -1,11 +1,11 @@
-name: 'Deploy access lambda'
+name: 'Update IAM'
 
 on:
   push:
     branches: [ "main" ]
     paths:
-      - access/**
-      - .github/workflows/deploy-access-lambda.yml
+      - iam/**
+      - .github/workflows/update-iam.yml
   workflow_dispatch:
 env:
   # Setting an environment variable with the value of a configuration variable
@@ -32,12 +32,6 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
     
-    - name: Build ZIP file
-      run: |
-        ls -lah
-        bash build.sh
-      working-directory: access/
-    
     - name: configure aws credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
@@ -49,23 +43,22 @@ jobs:
       run: |
         aws sts get-caller-identity
         ls -lah
-      working-directory: access/
+      working-directory: iam/
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       run: terraform init
-      working-directory: access/
+      working-directory: iam/
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
       run: terraform fmt -check
-      working-directory: access/
+      working-directory: iam/
 
     # Generates an execution plan for Terraform
     - name: Terraform Apply
       run: |
         terraform apply -auto-approve \
           -input=false \
-          -var="oidc_client_id=${{ secrets.OIDC_CLIENT_ID }}" \
-          -var="oidc_client_secret=${{ secrets.OIDC_CLIENT_SECRET }}"
-      working-directory: access/
+          -var="oidc_client_id=${{ secrets.OIDC_CLIENT_ID }}"
+      working-directory: iam/
