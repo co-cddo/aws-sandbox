@@ -88,6 +88,20 @@ resource "aws_iam_policy" "policy" {
           ]
           Sid = "DenySandboxAccess"
         },
+        {
+          Action = [
+            "*",
+          ]
+          Effect = "Deny"
+          Resource = [
+            "arn:aws:s3:::*-tfstate",
+            "arn:aws:s3:::aws-cloudtrail-logs-*",
+            "arn:aws:s3:::*-tfstate/*",
+            "arn:aws:s3:::aws-cloudtrail-logs-*/*",
+            "arn:aws:lambda:*:*:function:sandbox-access",
+          ]
+          Sid = "DenyS3Access"
+        },
       ]
     }
   )
