@@ -32,6 +32,54 @@ resource "aws_iam_policy" "policy" {
           Sid = "AnyAccess"
         },
         {
+          Effect = "Allow"
+          Action = [
+            "iam:AddRoleToInstanceProfile",
+            "iam:AttachRolePolicy",
+            "iam:CreateInstanceProfile",
+            "iam:CreatePolicy",
+            "iam:CreatePolicyVersion",
+            "iam:CreateRole",
+            "iam:CreateServiceLinkedRole",
+            "iam:DeleteGroup",
+            "iam:DeleteGroupPolicy",
+            "iam:DeleteInstanceProfile",
+            "iam:DeleteLoginProfile",
+            "iam:DeletePolicy",
+            "iam:DeletePolicyVersion",
+            "iam:DeleteRole",
+            "iam:DeleteRolePermissionsBoundary",
+            "iam:DeleteRolePolicy",
+            "iam:DeleteServiceLinkedRole",
+            "iam:DetachGroupPolicy",
+            "iam:DetachRolePolicy",
+            "iam:Generate*",
+            "iam:Get*",
+            "iam:List*",
+            "iam:PutGroupPolicy",
+            "iam:PutRolePermissionsBoundary",
+            "iam:PutRolePolicy",
+            "iam:RemoveRoleFromInstanceProfile",
+            "iam:SetDefaultPolicyVersion",
+            "iam:Simulate*",
+            "iam:UpdateAssumeRolePolicy",
+            "iam:UpdateGroup",
+            "iam:UpdateRole",
+            "iam:UpdateRoleDescription",
+          ]
+          Condition = {
+            "ForAnyValue:StringLike" = {
+              "aws:userid" = [
+                "*:*@digital.cabinet-office.gov.uk",
+              ]
+            }
+          }
+          Resource = [
+            "*",
+          ]
+          Sid = "AllowSomeIAM"
+        },
+        {
           Action = "iam:PassRole"
           Condition = {
             StringLike = {
